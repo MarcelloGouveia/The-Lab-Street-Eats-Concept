@@ -34,18 +34,12 @@ export default function Navbar({ showOrder = true }: NavbarProps) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <a href="#top" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center transition-transform group-hover:scale-110">
-  <img src="/logo.png" alt="The Lab Street Eats" className="w-full h-full object-cover" />
-</div>
-            <div className="flex flex-col leading-none">
-              <span className="text-white font-bold text-base tracking-tight">
-                The Lab Street Eats
-              </span>
-              <span className="text-amber-500/80 text-[11px] font-medium tracking-wide uppercase">
-                Kitchener · Ontario
-              </span>
-            </div>
-          </a>
+  <img 
+    src="/logo.png" 
+    alt="The Lab Street Eats" 
+    className="h-12 w-auto object-contain transition-transform group-hover:scale-105" 
+  />
+</a>
 
           <div className="hidden lg:flex items-center gap-1">
             {links.map((link) => (
