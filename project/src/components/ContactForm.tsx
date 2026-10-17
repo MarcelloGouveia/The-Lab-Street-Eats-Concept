@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -10,6 +9,9 @@ const subjects = [
   'Feedback',
   'Other',
 ] as const;
+
+// ⚠️ REPLACE THIS WITH YOUR ACCESS KEY FROM WEB3FORMS.COM
+const WEB3FORMS_ACCESS_KEY = '794e1fed-061f-4401-890a-9d19ca1046a1';
 
 export default function ContactForm() {
   const [name, setName] = useState('');
@@ -25,28 +27,47 @@ export default function ContactForm() {
     setStatus('submitting');
     setErrorMsg('');
 
-    const { error } = await supabase.from('inquiries').insert({
-      name,
-      email,
-      phone: phone || null,
-      subject,
-      message,
-    });
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          name,
+          email,
+          phone: phone || 'Not provided',
+          subject: `[The Lab Street Eats] ${subject}`,
+          message,
+          from_name: 'The Lab Street Eats Website',
+        }),
+      });
 
-    if (error) {
+      const result = await response.json();
+
+      if (result.success) {
+        setStatus('success');
+        setName('');
+        setEmail('');
+        setPhone('');
+        setSubject('Catering');
+        setMessage('');
+      } else {
+        setStatus('error');
+        setErrorMsg(
+          result.message ||
+            'Something went wrong while sending your message. Please try again or call us at (519) 603-5508.'
+        );
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
       setStatus('error');
       setErrorMsg(
-        'Something went wrong while sending your message. Please try again or call us at (519) 603-5508.'
+        'A network error occurred. Please try again or call us directly at (519) 603-5508.'
       );
-      return;
     }
-
-    setStatus('success');
-    setName('');
-    setEmail('');
-    setPhone('');
-    setSubject('Catering');
-    setMessage('');
   };
 
   if (status === 'success') {
